@@ -47,7 +47,7 @@
 
 ## チャレンジ要素一覧
 
-(未着手:URL 記載予定)
+https://docs.google.com/spreadsheets/d/1opfHW26t-LXvXuCnZHPw6zwD0Px_JR3nEpok0HnwljA/edit?usp=sharing
 
 ## 開発環境
 
@@ -59,5 +59,5 @@
 
 ## 使用素材
 
-- 麻雀牌画像(検討中)
+- 麻雀牌画像 https://mj-king.net/sozai/
 - 役の名前等に使用する和風フォント(検討中)
