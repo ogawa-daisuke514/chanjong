@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  role_id: 
+  name: MyString
+  fu: 
+  point: 
+  condition_id: 
+
+two:
+  role_id: 
+  name: MyString
+  fu: 
+  point: 
+  condition_id: 

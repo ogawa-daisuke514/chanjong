@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  name: MyString
+  kana: MyString
+  faan: 
+  score_down_type: 
+  outline: MyString
+  comment: MyString
+  goal_definition_id: 
+  condition_id: 
+  goal_example_id: 
+
+two:
+  user_id: 
+  name: MyString
+  kana: MyString
+  faan: 
+  score_down_type: 
+  outline: MyString
+  comment: MyString
+  goal_definition_id: 
+  condition_id: 
+  goal_example_id: 
