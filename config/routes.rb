@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
   root to: 'homes#top'
-  devise_for :users
-  resources :users, only: [:show, :edit, :update]
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
   get 'users/withdraw_confirm'
-  delete 'users/withdwaw'
+  delete 'users/withdraw'
+  resources :users, only: [:show, :edit, :update]
   resources :friends, only: [:index, :create, :destroy]
   resources :roles, except: [:index]
   post 'roles/:id' => "roles#copy_edit"

@@ -1,0 +1,26 @@
+<h2><%= title + ": " + list.size.to_s + "人" %></h2>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>名前</th>
+    <th></th>
+    <th></th>
+  </tr>
+<% list.each do |u| %>
+  <tr>
+    <td><%= u.id %></td>
+    <td><%= u.name %></td>
+    <% if positive %>
+      <td>
+      <%= form_with model: @friend, method: :post, url: friends_path do |f| %>
+        <%= f.hidden_field :target_user_id, value: u.id %>
+        <%= f.submit positive %>
+      <% end %>
+      </td>
+    <% else %>
+      <td></td>
+    <% end %>
+    <td><%= link_to negative, friend_path(u), method: :delete %></td>
+  </tr>
+<% end %>
+</table>

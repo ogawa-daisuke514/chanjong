@@ -10,7 +10,26 @@
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
+  <header>
+    <nav>
+      <% if user_signed_in? %>
+        ようこそ、<%= current_user.name %>さん
+        <ul>
+          <li><%= link_to "マイページ", user_path(current_user) %></li>
+          <li><%= link_to "フレンド", friends_path %></li>
+          <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
+        </ul>
+      <% else %>
+        <ul>
+          <li><%= link_to "新規登録", new_user_registration_path %></li>
+          <li><%= link_to "ログイン", new_user_session_path %></li>
+        </ul>
+      <% end %>
+    </nav>
+  </header>
   <body>
+    <div><%= flash.now[:notice] %></div>
+    <div><%= flash.now[:alert] %></div>
     <%= yield %>
   </body>
 </html>

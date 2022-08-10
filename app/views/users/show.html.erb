@@ -1,2 +1,8 @@
-<h1>Users#show</h1>
-<p>Find me in app/views/users/show.html.erb</p>
+<h1>ユーザーページ</h1>
+<p>ユーザーID: <%= @user.id %></p>
+<p>ユーザー名: <%= @user.name %></p>
+<% if @user == current_user %>
+  <p><%= link_to "ユーザー情報編集", edit_user_path(@user) %></p>
+  <p><%= link_to "退会画面へ", users_withdraw_confirm_path %></p>
+<% end %>
+<p><%= link_to "役一覧", user_roles_path(@user) %></p>

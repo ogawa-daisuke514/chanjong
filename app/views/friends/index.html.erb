@@ -1,2 +1,19 @@
-<h1>Friends#index</h1>
-<p>Find me in app/views/friends/index.html.erb</p>
+<h1>フレンド一覧</h1>
+<div>
+  あなたのユーザーIDは <%= current_user.id %> です。
+</div>
+<div>
+<%= render "flist", title: "フレンド", list: @friends, positive: nil, negative: "フレンド解除" %>
+</div>
+<div>
+<%= render "flist", title: "申請中", list: @requests, positive: nil, negative: "取り消し" %>
+</div>
+<div>
+<%= render "flist", title: "フレンド希望者", list: @targets, positive: "承認", negative: "拒否" %>
+</div>
+<div>
+<%= form_with model: @friend, url: friends_path, method: :post do |f| %>
+  <%= f.text_field :target_user_id, placeholder: "申請先ユーザーID" %>
+  <%= f.submit "申請" %>
+<% end %>
+</div>
