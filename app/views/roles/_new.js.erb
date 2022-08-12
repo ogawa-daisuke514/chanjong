@@ -1,1 +1,136 @@
-const ProcessType = <%= ProcessTypes.to_json.html_safe %>
+const ProcessTypes = <%= ProcessTypes.to_json.html_safe %>
+
+function get_proc_types(unit, type){
+  let any_unit = ["piece", "tile"].includes(unit)
+  let any_type = ["tile", "color", "num"].includes(type)
+  return ProcessTypes.filter(
+    (t) => {
+      return t.parent == null &&
+        ((any_unit && t.out_unit === "any") || t.out_unit === unit) &&
+        ((any_type && t.out_type === "any") || t.out_type === type)
+    }
+  )
+}
+
+function get_exclusive_types(proc_id){
+  return ProcessTypes.filter(
+    (t) => {
+      return t.parent === proc_id
+    }
+  )
+}
+
+function get_children_types(proc_id, unit, type){
+  let exc = get_exclusive_types(proc_id)
+  return (exc.length > 0 ? exc : get_proc_types(unit, type));
+}
+
+function options(ptypes){
+  return ptypes.map((p) => option_tag_from(p)).join('')
+}
+
+function option_tag_from(ptype){
+  let opt = document.createElement('option')
+  opt.setAttribute('value', ptype.id)
+  opt.textContent = ptype.name
+  return opt
+}
+
+function createElementWithId(ename, id){
+  let elem = document.createElement(ename)
+  elem.setAttribute('id', id)
+  return elem
+}
+
+function new_child(id, ptypes, out_unit, out_type){
+  let div = createElementWithId('div', id)
+  div.setAttribute('style', "border: 1px solid; padding: 4px;")
+
+  let sel = createElementWithId("select", id + "[process_type_id]")
+  sel.setAttribute('name', id + "[process_type_id]")
+  sel.addEventListener('change', (e) => handleSelected(id, e))
+  ptypes.map((p) => sel.appendChild(option_tag_from(p)))
+  div.appendChild(sel)
+  
+  let span_head = createElementWithId('span', id + "head")
+  div.appendChild(span_head)
+
+  let conditions = createElementWithId('div', id + "[conditions]")
+  div.appendChild(conditions)
+
+  let add_new = createElementWithId('div', id + "add_new")
+  let button = document.createElement("button")
+  button.textContent = "Add New .."
+  button.addEventListener('click', (e) => add_child(id))
+  add_new.appendChild(button)
+  div.appendChild(add_new)
+
+  let span_tail = createElementWithId('span', id + "tail")
+  div.appendChild(span_tail)
+
+  return div
+}
+
+
+ptype_info = {}
+
+function dfi(id){
+  return document.getElementById(id)
+}
+
+function add_default_to(id, new_id){
+  let unit = "piece"
+  let type = "tile"
+  let ptypes = get_children_types(0, unit, type)
+  dfi(id).appendChild(new_child(new_id, ptypes, unit, type))
+  ptype_info[new_id] = { out_unit: unit, out_type: type }
+  set_ptype(new_id, ptypes[0])
+}
+
+function set_ptype(element_id, ptype){
+  updateInfo(element_id, ptype)
+  updateContent(element_id, ptype)
+}
+
+function updateInfo(element_id, ptype){
+  let info = ptype_info[element_id]
+  let unit = info.out_unit
+  let type = info.out_type
+  info.in_unit = (ptype.in_unit === "out" ? unit : ptype.in_unit)
+  info.in_type = (ptype.in_type === "out" ? type : ptype.in_type)
+  info.valid_child_types = get_children_types(ptype.id, info.in_unit, info.in_type)
+  info.newest_child_n = 0
+}
+
+function updateContent(element_id, ptype){
+  dfi(element_id + "head").textContent = ptype.head_word ?? ""
+  dfi(element_id + "tail").textContent = ptype.tail_word ?? ""
+  dfi(element_id + "[conditions]").innerHTML = ""
+}
+
+function add_child(id){
+  let ptype = ProcessTypes[+dfi(id + "[process_type_id]").value]
+  let info = ptype_info[id]
+  let count = info.newest_child_n
+  info.newest_child_n += 1
+  let new_id = id + "[conditions][" + count + "]"
+  let wrapper = createElementWithId("div", new_id + "wrapper")
+  dfi(id + "[conditions]").appendChild(wrapper)
+  put_new_cond(wrapper, new_id, info.valid_child_types, info.in_unit, info.in_type)
+  if(ptype.middle_word) wrapper.append(ptype.middle_word)
+}
+
+function put_new_cond(toElem, id, ptypes, out_unit, out_type){
+  ptype_info[id] = { out_unit: out_unit, out_type: out_type }
+  let child = new_child(id, ptypes, out_unit, out_type)
+  toElem.appendChild(child)
+  set_ptype(id, ptypes[0])
+}
+
+function handleSelected(id, e){
+  set_ptype(id, ProcessTypes[+e.target.value])
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    add_default_to("condition_root", "condition")
+});

@@ -19,4 +19,16 @@ class Condition < ApplicationRecord
     conditions.each{|c| c.destroy_all }
     destroy
   end
+  def replaced(ptype, word_type, is_show=true)
+    word = nil
+    case word_type
+    when :head
+      word = ptype.head_word
+    when :middle
+      word = ptype.middle_word
+    when :tail
+      word = ptype.tail_word
+    end
+    ptype.arg_type && word ? word.gsub("_ARG", ARGS[ptype.arg_type][arg].to_s) : word
+  end
 end

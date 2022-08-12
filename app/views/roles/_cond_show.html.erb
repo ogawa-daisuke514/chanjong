@@ -1,0 +1,10 @@
+<div style="border: solid 1px; padding: 4px">
+  <% ptype = ProcessTypes[cond.process_type_id] %>
+  <%= ptype.name %><br>
+  <%= cond.replaced(ptype, :head)  %>
+  <% cond.conditions.each_with_index do |item, index| %>
+    <%= cond.replaced(ptype, :middle) if index > 0 %>
+    <%= render "cond_show", cond: item %>
+  <% end %>
+  <%= cond.replaced(ptype, :tail)  %>
+</div>
