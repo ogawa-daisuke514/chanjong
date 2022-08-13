@@ -1,12 +1,11 @@
-<script>
+/* global gon */
 
-const ProcessTypes = <%= ProcessTypes.to_json.html_safe %>
-const Args = <%= ARGS.to_json.html_safe %>
+let ptype_info = {}
 
 function get_proc_types(unit, type){
   let any_unit = ["piece", "tile"].includes(unit)
   let any_type = ["tile", "color", "num"].includes(type)
-  return ProcessTypes.filter(
+  return gon.ProcessTypes.filter(
     (t) => {
       return t.parent == null &&
         ((any_unit && t.out_unit === "any") || t.out_unit === unit) &&
@@ -16,7 +15,7 @@ function get_proc_types(unit, type){
 }
 
 function get_exclusive_types(proc_id){
-  return ProcessTypes.filter(
+  return gon.ProcessTypes.filter(
     (t) => {
       return t.parent === proc_id
     }
@@ -45,10 +44,16 @@ function new_child(id, ptypes, out_unit, out_type){
   let div = createElementWithId('div', id)
   div.setAttribute('style', "border: 1px solid; padding: 4px;")
 
-  let sel = createElementWithId("select", id + "[process_type_id]")
+  let general = ptypes.length > 0 && !ptypes[0].parent
+  let sel = createElementWithId((general ? "select" : "input"), id + "[process_type_id]")
   sel.setAttribute('name', id + "[process_type_id]")
-  sel.addEventListener('change', (e) => handleSelected(id, e))
-  ptypes.map((p) => sel.appendChild(option_tag_from(p.id, p.name)))
+  if(general){
+    sel.addEventListener('change', (e) => handleSelected(id, e))
+    ptypes.map((p) => sel.appendChild(option_tag_from(p.id, p.name)))
+  }else{
+    sel.setAttribute("type", "hidden")
+    sel.setAttribute("value", ptypes[0].id)
+  }
   div.appendChild(sel)
 
   let span_head = createElementWithId('span', id + "head")
@@ -69,12 +74,12 @@ function new_child(id, ptypes, out_unit, out_type){
 function new_button(id){
   let button = document.createElement("button")
   button.textContent = "Add New .."
+  button.setAttribute("type", "button")
   button.addEventListener('click', (e) => add_child(id))
   return button
 }
 
 
-ptype_info = {}
 
 function dfi(id){
   return document.getElementById(id)
@@ -84,9 +89,12 @@ function add_default_to(id, new_id){
   let unit = "piece"
   let type = "tile"
   let ptypes = get_children_types(0, unit, type)
-  dfi(id).appendChild(new_child(new_id, ptypes, unit, type))
-  ptype_info[new_id] = { out_unit: unit, out_type: type }
-  set_ptype(new_id, ptypes[0])
+  let e = dfi(id)
+  if(e && e.children.length === 0){
+    e.appendChild(new_child(new_id, ptypes, unit, type))
+    ptype_info[new_id] = { out_unit: unit, out_type: type }
+    set_ptype(new_id, ptypes[0])
+  }
 }
 
 function set_ptype(element_id, ptype){
@@ -141,7 +149,7 @@ function add_word_and_selector(toElem, id, ptype, word){
 function arg_selector(id, ptype){
   let sel = createElementWithId("select", id + "[arg]")
   sel.setAttribute("name", id + "[arg]")
-  let args = Args[ptype.arg_type]
+  let args = gon.Args[ptype.arg_type]
   for(let i = 0; i < args.length; i++){
     sel.appendChild(option_tag_from(i, args[i]))
   }
@@ -149,7 +157,7 @@ function arg_selector(id, ptype){
 }
 
 function add_child(id){
-  let ptype = ProcessTypes[+dfi(id + "[process_type_id]").value]
+  let ptype = gon.ProcessTypes[+dfi(id + "[process_type_id]").value]
   let info = ptype_info[id]
   let count = info.newest_child_n
   info.newest_child_n += 1
@@ -159,6 +167,7 @@ function add_child(id){
   if(ptype.children_count < 0){
     // 可変数の子を持つ場合のみ、消去ボタンを生成
     let button = document.createElement("button")
+    button.setAttribute("type", "button")
     button.addEventListener('click', (e) => remove_child(new_id))
     button.textContent = "x"
     wrapper.appendChild(button)
@@ -180,11 +189,7 @@ function put_new_cond(toElem, id, ptypes, out_unit, out_type){
 }
 
 function handleSelected(id, e){
-  set_ptype(id, ProcessTypes[+e.target.value])
+  set_ptype(id, gon.ProcessTypes[+e.target.value])
 }
 
-document.addEventListener('DOMContentLoaded', (event) => {
-    add_default_to("condition_root", "condition")
-});
-
-</script>
+add_default_to("condition_root", "condition")

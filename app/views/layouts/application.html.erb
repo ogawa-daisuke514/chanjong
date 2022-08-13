@@ -7,6 +7,7 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= include_gon %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
@@ -16,6 +17,7 @@
         ようこそ、<%= current_user.name %>さん
         <ul>
           <li><%= link_to "マイページ", user_path(current_user) %></li>
+          <li><%= link_to "ライブラリ", user_roles_path(current_user) %></li>
           <li><%= link_to "フレンド", friends_path %></li>
           <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
         </ul>

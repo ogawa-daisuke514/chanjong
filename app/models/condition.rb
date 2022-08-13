@@ -7,12 +7,29 @@ class Condition < ApplicationRecord
   accepts_nested_attributes_for :conditions
 
   def self.build_all(params)
-    return nil unless params.is_a?(Hash)
     cs = params[:conditions]
+    children = []
+    if !cs
+    elsif (cs.is_a?(Array))
+      children = cs.map{|c| Condition.build_all(c)}
+    else
+      cs.permit!.each_value{|v| children << Condition.build_all(v)}
+    end
     Condition.new(
       arg: params[:arg],
       process_type_id: params[:process_type_id],
-      conditions: (cs.is_a?(Array) ? cs.map{|c| Condition.build_all(c)} : [])
+      conditions: children
+    )
+  end
+  def save_all
+    save
+    conditions.map{|c| c.condition_id = id; c.save_all }
+  end
+  def deep_dup
+    Condition.new(
+      arg: arg,
+      process_type_id: process_type_id,
+      conditions: conditions.map{|c| c.deep_dup }
     )
   end
   def destroy_all

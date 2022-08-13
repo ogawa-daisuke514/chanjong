@@ -1,2 +1,30 @@
-<h1>Roles#show</h1>
-<p>Find me in app/views/roles/show.html.erb</p>
+<table>
+  <tr>
+    <td>役名</td>
+    <td><%= @role.name %></td>
+  </tr>
+  <tr>
+    <td>カナ</td>
+    <td><%= @role.kana %></td>
+  </tr>
+  <tr>
+    <td>翻</td>
+    <td><%= @role.faan %></td>
+  </tr>
+  <tr>
+    <td>食い下がり</td>
+    <td><%= @role.score_down_type %></td>
+  </tr>
+  <tr>
+    <td>概要</td>
+    <td><%= @role.outline %></td>
+  </tr>
+  <tr>
+    <td>コメント</td>
+    <td><%= @role.comment %></td>
+  </tr>
+</table>
+<div>
+  <div>条件:</div>
+  <%= render "cond_show", cond: @role.condition %>
+</div>

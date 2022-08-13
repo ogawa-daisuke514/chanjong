@@ -112,7 +112,7 @@ ProcessTypes << ProcessType.new( 20,
 )
 ProcessTypes << ProcessType.new( 21,
   "ATile", :exposed, 0, nil, nil, :tile, :tile,
-  "_ARG", nil, nil,
+  "_ARG牌", nil, nil,
   "", nil
 )
 ProcessTypes << ProcessType.new( 22,
@@ -147,7 +147,7 @@ ProcessTypes << ProcessType.new( 27,
 )
 ProcessTypes << ProcessType.new( 28,
   "Tiles", nil, -1, :set, :tile, :set, :tile,
-  "牌を指定:", nil, nil,
+  "牌種を指定:", nil, nil,
   "", nil
 )
 ProcessTypes << ProcessType.new( 29,
@@ -233,5 +233,7 @@ ARGS[:num] = [1,2,3,4,5,6];
 ARGS[:tile_num] = [1,2,3,4,5,6,7,8,9];
 ARGS[:tile] = ["1m", "2m", "3s"];
 ARGS[:color] = ["萬子", "筒子", "索子"];
-ARGS[:exposed] = ["不問", "明", "暗"];
+ARGS[:exposed] = ["", "明", "暗"];
 ARGS[:piece] = ["対子", "順子", "刻子"];
+
+ARGS.freeze
