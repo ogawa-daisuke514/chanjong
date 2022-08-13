@@ -126,7 +126,7 @@ ProcessTypes << ProcessType.new( 23,
   "", nil
 )
 ProcessTypes << ProcessType.new( 24,
-  "TilesAre", nil, 1, :piece, :out, :tile, :any,
+  "TilesAre", nil, 1, :tile, :out, :piece, :any,
   "牌ごとで", nil, nil,
   "", nil
 )
@@ -146,7 +146,7 @@ ProcessTypes << ProcessType.new( 27,
   "", nil
 )
 ProcessTypes << ProcessType.new( 28,
-  "Tiles", nil, 1, :set, :tile, :set, :tile,
+  "Tiles", nil, -1, :set, :tile, :set, :tile,
   "牌を指定:", nil, nil,
   "", nil
 )
@@ -156,7 +156,7 @@ ProcessTypes << ProcessType.new( 29,
   "", 28
 )
 ProcessTypes << ProcessType.new( 30,
-  "Numbers", nil, 1, :set, :num, :set, :num,
+  "Numbers", nil, -1, :set, :num, :set, :num,
   "数字を指定:", nil, nil,
   "", nil
 )
@@ -166,7 +166,7 @@ ProcessTypes << ProcessType.new( 31,
   "", 30
 )
 ProcessTypes << ProcessType.new( 32,
-  "Colors", nil, 1, :set, :color, :set, :color,
+  "Colors", nil, -1, :set, :color, :set, :color,
   "色を指定", nil, nil,
   "", nil
 )

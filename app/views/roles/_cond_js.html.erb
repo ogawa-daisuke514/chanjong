@@ -1,4 +1,7 @@
+<script>
+
 const ProcessTypes = <%= ProcessTypes.to_json.html_safe %>
+const Args = <%= ARGS.to_json.html_safe %>
 
 function get_proc_types(unit, type){
   let any_unit = ["piece", "tile"].includes(unit)
@@ -25,14 +28,10 @@ function get_children_types(proc_id, unit, type){
   return (exc.length > 0 ? exc : get_proc_types(unit, type));
 }
 
-function options(ptypes){
-  return ptypes.map((p) => option_tag_from(p)).join('')
-}
-
-function option_tag_from(ptype){
+function option_tag_from(value, name){
   let opt = document.createElement('option')
-  opt.setAttribute('value', ptype.id)
-  opt.textContent = ptype.name
+  opt.setAttribute('value', value)
+  opt.textContent = name
   return opt
 }
 
@@ -49,9 +48,9 @@ function new_child(id, ptypes, out_unit, out_type){
   let sel = createElementWithId("select", id + "[process_type_id]")
   sel.setAttribute('name', id + "[process_type_id]")
   sel.addEventListener('change', (e) => handleSelected(id, e))
-  ptypes.map((p) => sel.appendChild(option_tag_from(p)))
+  ptypes.map((p) => sel.appendChild(option_tag_from(p.id, p.name)))
   div.appendChild(sel)
-  
+
   let span_head = createElementWithId('span', id + "head")
   div.appendChild(span_head)
 
@@ -59,16 +58,19 @@ function new_child(id, ptypes, out_unit, out_type){
   div.appendChild(conditions)
 
   let add_new = createElementWithId('div', id + "add_new")
-  let button = document.createElement("button")
-  button.textContent = "Add New .."
-  button.addEventListener('click', (e) => add_child(id))
-  add_new.appendChild(button)
   div.appendChild(add_new)
 
   let span_tail = createElementWithId('span', id + "tail")
   div.appendChild(span_tail)
 
   return div
+}
+
+function new_button(id){
+  let button = document.createElement("button")
+  button.textContent = "Add New .."
+  button.addEventListener('click', (e) => add_child(id))
+  return button
 }
 
 
@@ -103,9 +105,47 @@ function updateInfo(element_id, ptype){
 }
 
 function updateContent(element_id, ptype){
-  dfi(element_id + "head").textContent = ptype.head_word ?? ""
-  dfi(element_id + "tail").textContent = ptype.tail_word ?? ""
-  dfi(element_id + "[conditions]").innerHTML = ""
+  add_word_and_selector(dfi(element_id + "head"), element_id, ptype, ptype.head_word)
+  add_word_and_selector(dfi(element_id + "tail"), element_id, ptype, ptype.tail_word)
+  let children = dfi(element_id + "[conditions]")
+  let add_new =  dfi(element_id + "add_new")
+  add_new.innerHTML = ""
+  if(ptype.children_count < 0){
+    add_new.appendChild(new_button(element_id))
+  }
+  children.innerHTML = ""
+  let count = ptype.children_count
+  if(count < 0){
+    add_child(element_id)
+  }else{
+    for(let i = 0; i < count; i++){
+      add_child(element_id)
+    }
+  }
+}
+
+function add_word_and_selector(toElem, id, ptype, word){
+  if(word && ptype.arg_type){
+    let spl = word.split("_ARG")
+    if(spl.length > 1){
+      toElem.innerHTML = ""
+      toElem.append(spl[0])
+      toElem.appendChild(arg_selector(id, ptype))
+      toElem.append(spl[1])
+      return
+    }
+  }
+  toElem.textContent = word ?? ""
+}
+
+function arg_selector(id, ptype){
+  let sel = createElementWithId("select", id + "[arg]")
+  sel.setAttribute("name", id + "[arg]")
+  let args = Args[ptype.arg_type]
+  for(let i = 0; i < args.length; i++){
+    sel.appendChild(option_tag_from(i, args[i]))
+  }
+  return sel
 }
 
 function add_child(id){
@@ -115,9 +155,21 @@ function add_child(id){
   info.newest_child_n += 1
   let new_id = id + "[conditions][" + count + "]"
   let wrapper = createElementWithId("div", new_id + "wrapper")
+
+  if(ptype.children_count < 0){
+    // 可変数の子を持つ場合のみ、消去ボタンを生成
+    let button = document.createElement("button")
+    button.addEventListener('click', (e) => remove_child(new_id))
+    button.textContent = "x"
+    wrapper.appendChild(button)
+  }
   dfi(id + "[conditions]").appendChild(wrapper)
   put_new_cond(wrapper, new_id, info.valid_child_types, info.in_unit, info.in_type)
   if(ptype.middle_word) wrapper.append(ptype.middle_word)
+}
+
+function remove_child(id){
+  dfi(id + "wrapper").remove()
 }
 
 function put_new_cond(toElem, id, ptypes, out_unit, out_type){
@@ -134,3 +186,5 @@ function handleSelected(id, e){
 document.addEventListener('DOMContentLoaded', (event) => {
     add_default_to("condition_root", "condition")
 });
+
+</script>
