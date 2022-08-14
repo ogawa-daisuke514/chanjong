@@ -25,6 +25,13 @@ class Condition < ApplicationRecord
     save
     conditions.map{|c| c.condition_id = id; c.save_all }
   end
+  def to_hash
+    {
+      process_type_id: process_type_id,
+      arg: arg,
+      conditions: conditions.map{|c| c.to_hash }
+    }
+  end
   def deep_dup
     Condition.new(
       arg: arg,

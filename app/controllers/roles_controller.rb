@@ -5,9 +5,9 @@ class RolesController < ApplicationController
     gon.ProcessTypes = ProcessTypes
     gon.Args = ARGS
   end
-  
+
   def create
-    role = current_user.roles.new(role_create_params)
+    role = current_user.roles.new(role_params)
     cond = Condition.build_all(params[:condition])
     if role.valid? && cond.valid?
       cond.save_all
@@ -29,11 +29,32 @@ class RolesController < ApplicationController
 
   def edit
     @role = Role.find(params[:id])
+    gon.ProcessTypes = ProcessTypes
+    gon.Args = ARGS
+    gon.condition = @role.condition.to_hash
+
   end
-  
+
   def update
+    role = Role.find(params[:id])
+    if(role.user == current_user)
+      cond = Condition.build_all(params[:condition])
+      if cond.valid?
+        if role.condition_id
+          role.condition.destroy_all
+        end
+        cond.save
+        role.condition_id = cond.id
+        role.update(role_params)
+        redirect_to role_path(role), notice: "役を正常に更新しました。"
+      else
+        redirect_to edit_role_path(role), alert: "役の保存に失敗しました。"
+      end
+    else
+      redirect_to request.referer, alert: "ほかのユーザーの役は削除できません。"
+    end
   end
-  
+
   def destroy
     role = Role.find(params[:id])
     if role.user_id
@@ -48,7 +69,7 @@ class RolesController < ApplicationController
       redirect_to request.referer, alert: "プリセットの役は削除できません。"
     end
   end
-  
+
   def copy_edit
     org = Role.find(params[:id])
     role = org.dup
@@ -62,9 +83,9 @@ class RolesController < ApplicationController
     role.save
     redirect_to edit_role_path(role)
   end
-  
+
   private
-  def role_create_params
+  def role_params
     params.require(:role).permit(:name, :kana, :faan,
       :score_down_type, :outline, :comment)
   end

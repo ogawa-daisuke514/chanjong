@@ -1,34 +1,3 @@
 <h1>新規作成</h1>
-<%= form_with model: @role, url: roles_path, method: :post, local: true do |f| %>
-  <div class="field">
-    <%= f.label :name %>
-    <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :kana %>
-    <%= f.text_field :kana %>
-  </div>
-  <div class="field">
-    <%= f.label :faan %>
-    <%= f.select :faan, 1..13 %>
-  </div>
-  <div class="field">
-    <%= f.label :score_down_type %>
-    <%= f.text_field :score_down_type %>
-  </div>
-  <div class="field">
-    <%= f.label :outline %>
-    <%= f.text_field :outline %>
-  </div>
-  <div class="field">
-    <%= f.label :comment %>
-    <%= f.text_area :comment %>
-  </div>
-  <div>
-    <%= f.label :condition %>
-    <div id="condition_root"></div>
-  </div>
-  <%= f.submit "新規作成", id: "submit_button" %>
-<% end %>
+<%= render "form", method: :post, path: roles_path, submit: "作成" %>
 
-<%= javascript_pack_tag "cond/form_make" %>

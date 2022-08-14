@@ -93,13 +93,17 @@ function add_default_to(id, new_id){
   if(e && e.children.length === 0){
     e.appendChild(new_child(new_id, ptypes, unit, type))
     ptype_info[new_id] = { out_unit: unit, out_type: type }
-    set_ptype(new_id, ptypes[0])
+    if(gon.condition){
+      pasteData(new_id, gon.condition)
+    }else{
+      set_ptype(new_id, ptypes[0])
+    }
   }
 }
 
-function set_ptype(element_id, ptype){
+function set_ptype(element_id, ptype, children_count = 1){
   updateInfo(element_id, ptype)
-  updateContent(element_id, ptype)
+  updateContent(element_id, ptype, children_count)
 }
 
 function updateInfo(element_id, ptype){
@@ -112,7 +116,7 @@ function updateInfo(element_id, ptype){
   info.newest_child_n = 0
 }
 
-function updateContent(element_id, ptype){
+function updateContent(element_id, ptype, children_count){
   add_word_and_selector(dfi(element_id + "head"), element_id, ptype, ptype.head_word)
   add_word_and_selector(dfi(element_id + "tail"), element_id, ptype, ptype.tail_word)
   let children = dfi(element_id + "[conditions]")
@@ -124,11 +128,10 @@ function updateContent(element_id, ptype){
   children.innerHTML = ""
   let count = ptype.children_count
   if(count < 0){
+    count = children_count
+  }
+  for(let i = 0; i < count; i++){
     add_child(element_id)
-  }else{
-    for(let i = 0; i < count; i++){
-      add_child(element_id)
-    }
   }
 }
 
@@ -190,6 +193,20 @@ function put_new_cond(toElem, id, ptypes, out_unit, out_type){
 
 function handleSelected(id, e){
   set_ptype(id, gon.ProcessTypes[+e.target.value])
+}
+
+function pasteData(id, data){
+  let sel = dfi(id + "[process_type_id]")
+  sel.value = data.process_type_id
+  let cl = data.conditions.length
+  set_ptype(id, gon.ProcessTypes[data.process_type_id], cl)
+  let arg = dfi(id + "[arg]")
+  if(arg && data.arg){
+    arg.value = data.arg
+  }
+  for(let i = 0; i < cl; i++){
+    pasteData(id + "[conditions][" + i + "]", data.conditions[i])
+  }
 }
 
 add_default_to("condition_root", "condition")
