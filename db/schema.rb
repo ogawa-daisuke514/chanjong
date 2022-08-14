@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 2022_08_06_172545) do
 
   create_table "piece_definitions", force: :cascade do |t|
     t.string "name"
+    t.boolean "natural"
     t.integer "piece_definition_id"
     t.integer "role_id"
     t.integer "condition_id"

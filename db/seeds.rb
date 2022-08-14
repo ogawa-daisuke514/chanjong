@@ -5,3 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+PieceDefinition.create(name: "対子", natural: true,  condition: Condition.from_array([:And, :Same, [:NTimes, 2, [:ATile, 0]]]))
+PieceDefinition.create(name: "面子", natural: false, condition: Condition.from_array(:False), piece_definitions: [
+  PieceDefinition.create(name: "順子", natural: true,
+  condition: Condition.from_array([:And, :OneColored, [:NumberIs, [:Sequence, 1]], [:NTimes, 3, [:ATile, 0]]])),
+  PieceDefinition.create(name: "刻子", natural: true,
+  condition: Condition.from_array([:And, :Same, [:NTimes, 3, [:ATile, 0]]]), piece_definitions: [
+    PieceDefinition.create(name: "槓子", natural: false, condition: Condition.from_array([:And, :Same, [:NTimes, 4, [:ATile, 0]]]))
+  ])
+])
