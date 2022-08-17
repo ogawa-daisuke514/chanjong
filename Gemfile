@@ -7,8 +7,6 @@ ruby '2.6.3'
 gem 'rails', '~> 6.1.6', '>= 6.1.6.1'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3', '~> 1.4'
-# Use Puma as the app server
-gem 'puma', '~> 5.0'
 # Use SCSS for stylesheets
 gem 'sass-rails', '>= 6'
 # Transpile app-like JavaScript. Read more: https://github.com/rails/webpacker
@@ -27,6 +25,9 @@ gem 'image_processing', '~> 1.2'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
+# Use Puma as the app server
+gem 'puma', '~> 3.11'
+# gem 'puma', '~> 5.0'
 
 gem 'devise'
 gem 'kaminari'
@@ -55,6 +56,15 @@ group :test do
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end
+
+gem 'dotenv-rails'
+group :production do
+  gem 'mysql2'
+end
+
+gem 'net-smtp'
+gem 'net-pop'
+gem 'net-imap'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
