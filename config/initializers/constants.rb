@@ -228,12 +228,50 @@ ProcessTypes << ProcessType.new( 43,
 
 ProcessTypes.freeze
 
-ARGS = {}
-ARGS[:num] = [1,2,3,4,5,6];
-ARGS[:tile_num] = [1,2,3,4,5,6,7,8,9];
-ARGS[:tile] = ["1m", "2m", "3s"];
-ARGS[:color] = ["萬子", "筒子", "索子"];
-ARGS[:exposed] = ["", "明", "暗"];
-ARGS[:piece] = ["対子", "順子", "刻子"];
+Numbers = [1,2,3,4,5,6,7,8,9]
+Colors = [:ms, :ps, :ss, :w, :d]
 
-ARGS.freeze
+ColorStrings = {}
+ColorStrings[:ms] = "萬子"
+ColorStrings[:ps] = "筒子"
+ColorStrings[:ss] = "索子"
+ColorStrings[:w] = "風牌"
+ColorStrings[:d] = "三元牌"
+
+Tile = Struct.new( :id,
+  :name, :color, :num, :img_name
+)
+Tiles = []
+t_idx = 1
+[:ms, :ps, :ss].each_with_index do |c, ci|
+  Numbers.each do |n|
+    Tiles << Tile.new(t_idx,
+      "　一二三四五六七八九"[n] + "萬筒索"[ci], c, n,
+      c.to_s + n.to_s
+    )
+    t_idx += 1
+  end
+end
+
+(1..4).each do |n|
+  Tiles << Tile.new(t_idx,
+    "　東南西北"[n], :w, nil,
+    "w" + n.to_s
+  )
+  t_idx += 1
+end
+
+(1..3).each do |n|
+  Tiles << Tile.new(t_idx,
+    "　白發中"[n], :d, nil,
+    "d" + n.to_s
+  )
+  t_idx += 1
+end
+
+ARGS = {}
+ARGS[:num] = (1..13).to_a
+ARGS[:tile_num] = Numbers
+ARGS[:tile] = Tiles.map{|t| t.name}
+ARGS[:color] = Colors.map{|c| ColorStrings[c] }
+ARGS[:exposed] = ["", "明", "暗"];

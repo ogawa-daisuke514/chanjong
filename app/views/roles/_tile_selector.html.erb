@@ -1,0 +1,28 @@
+<% colCount = 9 %>
+<% rowCount = (Tiles.size - 1) / colCount + 1 %>
+<% index = 0 %>
+<table id="tile_selector">
+  <% (1..rowCount).each do %>
+  <tr>
+    <% (1..colCount).each do %>
+      <% if index < Tiles.size %>
+        <td class="tile_selector_cell">
+          <%= image_tag "tiles/front/p_" + Tiles[index].img_name + "_1.gif" %>
+        </td>
+      <% else %>
+        <td>
+        </td>
+      <% end %>
+      <% index += 1 %>
+    <% end %>
+  </tr>
+  <% end %>
+</table>
+<button id="button">
+  <span>Press to Show</span>
+</button>
+<button id="button2">
+  <span>Press to Show</span>
+</button>
+
+<%= javascript_pack_tag "tile_selector" %>

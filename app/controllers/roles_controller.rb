@@ -4,6 +4,7 @@ class RolesController < ApplicationController
     @role = Role.new
     gon.ProcessTypes = ProcessTypes
     gon.Args = ARGS
+    gon.Args[:piece] = PieceDefinition.all.map{|pi| pi.name }
   end
 
   def create
