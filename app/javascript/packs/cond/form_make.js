@@ -1,5 +1,7 @@
 /* global gon */
 
+// 役フォームに関するコード
+
 let ptype_info = {}
 
 function get_proc_types(unit, type){
@@ -73,14 +75,14 @@ function new_child(id, ptypes, out_unit, out_type){
 
 function new_button(id){
   let button = document.createElement("button")
-  button.textContent = "Add New .."
+  button.textContent = "追加 .."
   button.setAttribute("type", "button")
   button.addEventListener('click', (e) => add_child(id))
   return button
 }
 
 
-
+// 生のJavaScriptだとよく使うので略記。
 function dfi(id){
   return document.getElementById(id)
 }
@@ -150,12 +152,21 @@ function add_word_and_selector(toElem, id, ptype, word){
 }
 
 function arg_selector(id, ptype){
-  let sel = createElementWithId("select", id + "[arg]")
-  sel.setAttribute("name", id + "[arg]")
-  let args = gon.Args[ptype.arg_type]
-  for(let i = 0; i < args.length; i++){
-    sel.appendChild(option_tag_from(i, args[i]))
+  let isTile = ptype.arg_type === "tile"
+  let sel = createElementWithId((isTile ? "button" : "select"), id + "[arg]")
+  sel.textContent = "牌を選択.."
+  if(isTile){
+    sel.setAttribute("type", "button")
+    sel.addEventListener("click", (e) => {
+      showSelector(id + "[arg]")
+    })
+  }else{
+    let args = gon.Args[ptype.arg_type]
+    for(let i = 0; i < args.length; i++){
+      sel.appendChild(option_tag_from(i, args[i]))
+    }
   }
+  sel.setAttribute("name", id + "[arg]")
   return sel
 }
 
@@ -170,6 +181,8 @@ function add_child(id){
   if(ptype.children_count < 0){
     // 可変数の子を持つ場合のみ、消去ボタンを生成
     let button = document.createElement("button")
+    // form内のbuttonタグはデフォルトで送信ボタンとして振舞う。
+    // 「ただのボタン」であることを次の文で登録する。
     button.setAttribute("type", "button")
     button.addEventListener('click', (e) => remove_child(new_id))
     button.textContent = "x"
@@ -210,3 +223,64 @@ function pasteData(id, data){
 }
 
 add_default_to("condition_root", "condition")
+
+// 牌セレクタに関するコード
+
+function showSelector(id) {
+  let elem = document.getElementById(id);
+  if(elem == null){
+    alert("elem is null");
+    return;
+  }
+  if(tile_selector == null){
+    alert("tile_selector is null");
+    return;
+  }
+  input_id = id;
+  elem.appendChild(tile_selector);
+}
+function hideSelector(){
+  input_id = null;
+  tile_selector = document.getElementById("tile_selector");
+  if(tile_selector) tile_selector.remove();
+  console.log(tile_selector == null)
+}
+
+function setTileSelectListener(id){
+  let button = document.getElementById(id);
+  button.addEventListener("click", () => showSelector(id))
+}
+
+function setTileValue(event, item, value){
+  if(input_id == null){
+    alert("input_id is null");
+    return true;
+  }
+  let id = input_id
+  let elem = document.getElementById(id);
+  let img = item.children.item(0).cloneNode(true)
+  hideSelector()
+  elem.innerHTML = "";
+  elem.appendChild(img)
+  let input = document.createElement("input")
+  input.setAttribute("type", "hidden")
+  input.setAttribute("name", id)
+  input.setAttribute("value", value)
+  elem.appendChild(input)
+  // alert("id=" + id + ", value=" + value)
+  // table_col.stopPropagation();
+  event.stopPropagation();
+}
+
+function initTileSelector(){
+  let cells = document.getElementsByClassName("tile_selector_cell");
+  for(let i = 0; i<cells.length; i++){
+    cells.item(i).addEventListener("click", (event)=> setTileValue(event, cells.item(i), i))
+  }
+  hideSelector();
+}
+
+let tile_selector = null
+let input_id = null
+
+initTileSelector()

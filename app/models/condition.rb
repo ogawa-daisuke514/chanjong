@@ -61,7 +61,7 @@ class Condition < ApplicationRecord
     ptype = ProcessTypes[process_type_id]
     result = []
     result << ptype.name.intern unless ptype.parent
-    result << arg if ptype.arg_type && arg 
+    result << arg if ptype.arg_type && arg
     result += conditions.map{|c| c.to_array }
     result = result[0] if result.size == 1 && conditions.empty?
     result
